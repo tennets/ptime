@@ -207,14 +207,20 @@ function _start_cycle
 	_cc=0
 
 	# Start a pomodoro cycle
-	while [ $_cc -ne $4 ]; do
+	while : ; do
 
 		_current_pomodoro_cycle=$(( $_cc + 1 ))
 
 		_countdown $1 "FOCUS" $_current_pomodoro_cycle
-		_countdown $2 "SHORT BREAK" $_current_pomodoro_cycle
 
 		(( _cc++ ))
+
+		# Break out if this is the last unit of the cycle
+		if [ $_cc -eq $4 ]; then
+			break
+		fi
+
+		_countdown $2 "SHORT BREAK" $_current_pomodoro_cycle
 
 	done
 	_countdown $3 "LONG BREAK"
@@ -271,10 +277,11 @@ function _countdown
 # usage: _timer_alarm
 function _timer_alarm
 {
+	tiu="Time is up"
 	if [ "$(uname)" = "Darwin" ]; then
-		say -v Zarvox -r 1.25 "Time is up"
+		say -v Zarvox -r 1.25 $tiu
 	elif [ "$(uname)" = "Linux" ]; then
-		# generated with: say -v Zarvox -r 1.25 -o timeisup.wav --data-format=LEF32@32000 "Time is up"
+		# generated on macOS with 'say -v Zarvox -r 1.25 -o timeisup.wav --data-format=LEF32@32000 $tiu'
 		paplay timeisup.wav
 	fi
 }
